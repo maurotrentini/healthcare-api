@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  symfony-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: healthcare_api
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    environment:
+      DATABASE_URL: "mysql://symfony:symfony@db:3306/healthcare"
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: healthcare_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: healthcare
+      MYSQL_USER: symfony
+      MYSQL_PASSWORD: symfony
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: healthcare_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
