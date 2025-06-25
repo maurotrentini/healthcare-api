@@ -4,21 +4,35 @@ namespace App\Entity;
 
 use App\Repository\AppointmentRepository;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AppointmentRepository::class)]
+#[ApiResource]
 class Appointment
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $date = null;
+    private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTime $time = null;
+    private ?\DateTimeInterface $time = null;
+
+    #[ApiSubresource]
+    #[ORM\ManyToOne(targetEntity: Doctor::class)]
+    private ?Doctor $doctor = null;
+
+    #[ApiSubresource]
+    #[ORM\ManyToOne(targetEntity: Patient::class)]
+    private ?Patient $patient = null;
+
+    #[ApiSubresource]
+    #[ORM\ManyToOne(targetEntity: Clinic::class)]
+    private ?Clinic $clinic = null;
 
     public function getId(): ?int
     {
@@ -45,6 +59,42 @@ class Appointment
     public function setTime(\DateTime $time): static
     {
         $this->time = $time;
+
+        return $this;
+    }
+
+    public function getDoctor(): ?Doctor
+    {
+        return $this->doctor;
+    }
+
+    public function setDoctor(?Doctor $doctor): static
+    {
+        $this->doctor = $doctor;
+
+        return $this;
+    }
+
+    public function getPatient(): ?Patient
+    {
+        return $this->patient;
+    }
+
+    public function setPatient(?Patient $patient): static
+    {
+        $this->patient = $patient;
+
+        return $this;
+    }
+
+    public function getClinic(): ?Clinic
+    {
+        return $this->clinic;
+    }
+
+    public function setClinic(?Clinic $clinic): static
+    {
+        $this->clinic = $clinic;
 
         return $this;
     }

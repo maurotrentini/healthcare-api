@@ -3,15 +3,19 @@
 namespace App\Entity;
 
 use App\Repository\PatientRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PatientRepository::class)]
+#[ApiResource]
 class Patient
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
@@ -21,7 +25,17 @@ class Patient
     private ?string $lastName = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTime $dateOfBirth = null;
+    private ?\DateTimeInterface $dateOfBirth = null;
+
+    #[ApiSubresource]
+    #[ORM\OneToMany(mappedBy: 'patient', targetEntity: Appointment::class)]
+    private Collection $appointments;
+
+    // In the constructor
+    public function __construct()
+    {
+        $this->appointments = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -60,6 +74,38 @@ class Patient
     public function setDateOfBirth(?\DateTime $dateOfBirth): static
     {
         $this->dateOfBirth = $dateOfBirth;
+
+        return $this;
+    }
+
+    // Getter
+    /**
+     * @return Collection<int, Appointment>
+     */
+    public function getAppointments(): Collection
+    {
+        return $this->appointments;
+    }
+
+    // Adder
+    public function addAppointment(Appointment $appointment): static
+    {
+        if (!$this->appointments->contains($appointment)) {
+            $this->appointments[] = $appointment;
+            $appointment->setPatient($this);
+        }
+
+        return $this;
+    }
+
+    // Remover
+    public function removeAppointment(Appointment $appointment): static
+    {
+        if ($this->appointments->removeElement($appointment)) {
+            if ($appointment->getPatient() === $this) {
+                $appointment->setPatient(null);
+            }
+        }
 
         return $this;
     }
