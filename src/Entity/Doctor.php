@@ -6,10 +6,43 @@ use App\Repository\DoctorRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Link;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DoctorRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    uriTemplate: '/appointments/{appointmentId}/doctor',
+    uriVariables: [
+        'appointmentId' => new Link(fromClass: Appointment::class, fromProperty: 'doctor')
+    ],
+    operations: [new Get()]
+)]
+#[ApiResource(
+    operations: [
+        new GetCollection(),   // GET /doctors
+        new Post(),            // POST /doctors
+        new Get(),             // GET /doctors/{id}
+        new Patch(),           // PATCH /doctors/{id}
+        new Delete(),          // DELETE /doctors/{id}
+        // **explicit subresource** for appointments
+        new GetCollection(
+            uriTemplate: '/doctors/{id}/appointments',
+            uriVariables: [
+                'id' => new Link(
+                    fromClass: Appointment::class,
+                    fromProperty: 'doctor'
+                )
+            ],
+            // scope serialization:
+            normalizationContext: ['groups' => ['doctor:appointments:read']]
+        ),
+    ]
+)]
 class Doctor
 {
     #[ORM\Id]

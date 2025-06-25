@@ -8,9 +8,44 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Link;
 
 #[ORM\Entity(repositoryClass: ClinicRepository::class)]
-#[ApiResource] 
+#[ApiResource(
+    uriTemplate: '/appointments/{appointmentId}/clinic',
+    uriVariables: [
+        'appointmentId' => new Link(fromClass: Appointment::class, fromProperty: 'clinic')
+    ],
+    operations: [new Get()]
+)]
+#[ApiResource(
+    operations: [
+        new GetCollection(),   // GET /clinics
+        new Post(),            // POST /clinics
+        new Get(),             // GET /clinics/{id}
+        new Patch(),           // PATCH /clinics/{id}
+        new Delete(),          // DELETE /clinics/{id}
+        new GetCollection(
+            uriTemplate: '/clinics/{id}/doctors',
+            uriVariables: [
+                'id' => new Link(fromClass: Doctor::class, fromProperty: 'clinic')
+            ],
+            normalizationContext: ['groups' => ['clinic:doctors:read']]
+        ),
+        new GetCollection(
+            uriTemplate: '/clinics/{id}/appointments',
+            uriVariables: [
+                'id' => new Link(fromClass: Appointment::class, fromProperty: 'clinic')
+            ],
+            normalizationContext: ['groups' => ['clinic:appointments:read']]
+        ),
+    ]
+)]
 class Clinic
 {
     #[ORM\Id]

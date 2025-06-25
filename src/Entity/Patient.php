@@ -7,10 +7,38 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Link;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PatientRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    uriTemplate: '/appointments/{appointmentId}/patient',
+    uriVariables: [
+        'appointmentId' => new Link(fromClass: Appointment::class, fromProperty: 'patient')
+    ],
+    operations: [new Get()]
+)]
+#[ApiResource(
+    operations: [
+        new GetCollection(),   // GET /patients
+        new Post(),            // POST /patients
+        new Get(),             // GET /patients/{id}
+        new Patch(),           // PATCH /patients/{id}
+        new Delete(),          // DELETE /patients/{id}
+        new GetCollection(
+            uriTemplate: '/patients/{id}/appointments',
+            uriVariables: [
+                'id' => new Link(fromClass: Appointment::class, fromProperty: 'patient')
+            ],
+            normalizationContext: ['groups' => ['patient:appointments:read']]
+        ),
+    ]
+)]
 class Patient
 {
     #[ORM\Id]

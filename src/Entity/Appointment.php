@@ -23,15 +23,15 @@ class Appointment
     private ?\DateTimeInterface $time = null;
 
     #[ApiSubresource]
-    #[ORM\ManyToOne(targetEntity: Doctor::class)]
+    #[ORM\ManyToOne(inversedBy: 'appointments', targetEntity: Doctor::class)]
     private ?Doctor $doctor = null;
 
     #[ApiSubresource]
-    #[ORM\ManyToOne(targetEntity: Patient::class)]
+    #[ORM\ManyToOne(inversedBy: 'appointments', targetEntity: Patient::class)]
     private ?Patient $patient = null;
 
     #[ApiSubresource]
-    #[ORM\ManyToOne(targetEntity: Clinic::class)]
+    #[ORM\ManyToOne(inversedBy: 'appointments', targetEntity: Clinic::class)]
     private ?Clinic $clinic = null;
 
     public function getId(): ?int
