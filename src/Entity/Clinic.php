@@ -17,13 +17,6 @@ use ApiPlatform\Metadata\Link;
 
 #[ORM\Entity(repositoryClass: ClinicRepository::class)]
 #[ApiResource(
-    uriTemplate: '/appointments/{appointmentId}/clinic',
-    uriVariables: [
-        'appointmentId' => new Link(fromClass: Appointment::class, fromProperty: 'clinic')
-    ],
-    operations: [new Get()]
-)]
-#[ApiResource(
     operations: [
         new GetCollection(),   // GET /clinics
         new Post(),            // POST /clinics
@@ -46,6 +39,21 @@ use ApiPlatform\Metadata\Link;
         ),
     ]
 )]
+#[ApiResource(
+    uriTemplate: '/doctors/{doctorId}/clinic',
+    uriVariables: [
+        'doctorId' => new Link(fromClass: Doctor::class, fromProperty: 'clinic')
+    ],
+    operations: [new Get()]
+)]
+#[ApiResource(
+    uriTemplate: '/appointments/{appointmentId}/clinic',
+    uriVariables: [
+        'appointmentId' => new Link(fromClass: Appointment::class, fromProperty: 'clinic')
+    ],
+    operations: [new Get()]
+)]
+
 class Clinic
 {
     #[ORM\Id]

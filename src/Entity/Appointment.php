@@ -5,9 +5,18 @@ namespace App\Entity;
 use App\Repository\AppointmentRepository;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Get;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AppointmentRepository::class)]
+#[ApiResource(
+    uriTemplate: '/appointments/{appointmentId}/doctor',
+    uriVariables: [
+        'appointmentId' => new Link(fromClass: Appointment::class, fromProperty: 'doctor')
+    ],
+    operations: [new Get()]
+)]
 #[ApiResource]
 class Appointment
 {

@@ -16,13 +16,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DoctorRepository::class)]
 #[ApiResource(
-    uriTemplate: '/appointments/{appointmentId}/doctor',
-    uriVariables: [
-        'appointmentId' => new Link(fromClass: Appointment::class, fromProperty: 'doctor')
-    ],
-    operations: [new Get()]
-)]
-#[ApiResource(
     operations: [
         new GetCollection(),   // GET /doctors
         new Post(),            // POST /doctors
@@ -59,7 +52,6 @@ class Doctor
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $specialty = null;
 
-    #[ApiSubresource]
     #[ORM\ManyToOne(targetEntity: Clinic::class, inversedBy: 'doctors')]
     private ?Clinic $clinic = null;
 
