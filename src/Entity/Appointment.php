@@ -5,11 +5,24 @@ namespace App\Entity;
 use App\Repository\AppointmentRepository;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Link;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AppointmentRepository::class)]
+#[ApiResource(
+    operations: [
+        new GetCollection(),   // GET /appointments
+        new Post(),            // POST /appointments
+        new Get(),             // GET /appointments/{id}
+        new Patch(),           // PATCH /appointments/{id}
+        new Delete(),          // DELETE /appointments/{id}
+    ]
+)]
 #[ApiResource(
     uriTemplate: '/appointments/{appointmentId}/doctor',
     uriVariables: [
@@ -17,7 +30,7 @@ use Doctrine\ORM\Mapping as ORM;
     ],
     operations: [new Get()]
 )]
-#[ApiResource]
+
 class Appointment
 {
     #[ORM\Id]
