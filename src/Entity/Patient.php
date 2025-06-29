@@ -17,13 +17,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PatientRepository::class)]
 #[ApiResource(
-    uriTemplate: '/appointments/{appointmentId}/patient',
-    uriVariables: [
-        'appointmentId' => new Link(fromClass: Appointment::class, fromProperty: 'patient')
-    ],
-    operations: [new Get()]
-)]
-#[ApiResource(
     operations: [
         new GetCollection(),   // GET /patients
         new Post(),            // POST /patients
@@ -38,6 +31,13 @@ use Doctrine\ORM\Mapping as ORM;
             normalizationContext: ['groups' => ['patient:appointments:read']]
         ),
     ]
+)]
+#[ApiResource(
+    uriTemplate: '/appointments/{appointmentId}/patient',
+    uriVariables: [
+        'appointmentId' => new Link(fromClass: Appointment::class, fromProperty: 'patient')
+    ],
+    operations: [new Get()]
 )]
 class Patient
 {
